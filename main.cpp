@@ -27,9 +27,8 @@ int main() {
 
     if (file_prime_distribution.is_open() && file_primes.is_open()) {
         for (unsigned int i = 1; i < prime_max+1; i+=1) {
-            unsigned int divisors = 0;
-            //cout << "Testing for Prime: " << i << "------------------------------------\n";
-            for (unsigned int j = 1; j < i + 1; j++) {
+            unsigned int divisors = 2;
+            for (unsigned int j = 2; j < ((i/2) + 2); j++) {
                 if (i % j == 0) {
                     //cout << "Found new divisor: " << j << "\n";
                     divisors++;
