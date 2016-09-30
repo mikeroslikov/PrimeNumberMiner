@@ -19,6 +19,8 @@ inline bool IsPrime( int64_t number ) {
 
 
 int main() {
+    //Amount of primes found
+    int64_t prime_count = 0;
     //Previous prime number to see the distribution
     int64_t prevPrime = 0;
     //current prime number
@@ -44,16 +46,19 @@ int main() {
     //Don't proceed if file's aren't open, this avoids disaster
     if (file_prime_distribution.is_open() && file_primes.is_open()) {
         //Even numbers aren't prime number, except 2
-        #pragma omp parallel for
+        #pragma omp parallel for reduction (+:prime_count)
         for (int64_t i = 1; i < prime_max+1; i+=1) {
-
+            if (i % 1000000 == 0) { // every 1,000,000 prime checks print out status
+            cout << "Prime Checks: " << i  << "\nNumber: " << prime_count << "\nValue: " << prime << "\nTime: " << difftime(time(0), start)/60.00 <<  " min\n\n";
+        }
             //See if number is a prime
             if (IsPrime(i)) {
+                ++prime_count;
                 prevPrime = prime;
                 prime = i;
-                cout << prime << "\n";
+
                 //record into file
-                file_prime_distribution << (prime - prevPrime) << "\n";
+                file_prime_distribution << (prime - prevPrime) << ";" << difftime(time(0), start) << "\n";
                 file_primes << prime << "\n";
             }
 
