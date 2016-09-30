@@ -7,11 +7,11 @@
 
 using namespace std;
 
-inline bool IsPrime( unsigned int number ) {
+inline bool IsPrime( int64_t number ) {
     if ( ( (!(number & 1)) && number != 2 ) || (number < 2) || (number % 3 == 0 && number != 3) )
         return (false);
 
-    for( unsigned int k = 1; 36*k*k-12*k < number;++k)
+    for( int64_t k = 1; 36*k*k-12*k < number;++k)
         if ( (number % (6*k+1) == 0) || (number % (6*k-1) == 0) )
             return (false);
     return true;
@@ -20,9 +20,9 @@ inline bool IsPrime( unsigned int number ) {
 
 int main() {
     //Previous prime number to see the distribution
-    unsigned int prevPrime = 0;
+    int64_t prevPrime = 0;
     //current prime number
-    unsigned int prime = 0;
+    int64_t prime = 0;
 
 
 
@@ -30,7 +30,7 @@ int main() {
     ofstream file_primes("primes.txt");
 
     //The roof of the prime number search
-    unsigned int prime_max  = 1000;
+    int64_t prime_max  = 1000;
 
 
     cout << "Roof of prime number search range? (-1 to exit)\n";
@@ -45,10 +45,10 @@ int main() {
     if (file_prime_distribution.is_open() && file_primes.is_open()) {
         //Even numbers aren't prime number, except 2
         #pragma omp parallel for
-        for (unsigned int i = 1; i < prime_max+1; i+=1) {
+        for (int64_t i = 1; i < prime_max+1; i+=1) {
 
             //See if number is a prime
-            if (IsPrime(i)) { //Because prime numbers divide into 1 and themselves
+            if (IsPrime(i)) {
                 prevPrime = prime;
                 prime = i;
                 cout << prime << "\n";
@@ -71,7 +71,7 @@ int main() {
     time(&now);
 
     //inform user of duration
-    cout << "Duration: " << difftime(time(0), start) << "\n";
+    cout << "Duration: " << difftime(time(0), start)/60.00 <<  " min\n";
 
     //press any key to continue
     system("pause");
