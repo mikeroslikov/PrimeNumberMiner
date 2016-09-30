@@ -1,17 +1,25 @@
 #include <iostream>
 #include <fstream>
-#include <string>
 #include <thread>
-#include <ctime>
 #include <stdlib.h>
+#include "omp.h"
 
 
 using namespace std;
 
+inline bool IsPrime( unsigned int number ) {
+    if ( ( (!(number & 1)) && number != 2 ) || (number < 2) || (number % 3 == 0 && number != 3) )
+        return (false);
+
+    for( unsigned int k = 1; 36*k*k-12*k < number;++k)
+        if ( (number % (6*k+1) == 0) || (number % (6*k-1) == 0) )
+            return (false);
+    return true;
+}
 
 
 int main() {
-    //Previos prime number to see the distribution
+    //Previous prime number to see the distribution
     unsigned int prevPrime = 0;
     //current prime number
     unsigned int prime = 0;
@@ -29,26 +37,18 @@ int main() {
     cin >> prime_max;
 
     //Record current time to see the duration
-    time_t start_milli;
-    time(&start_milli);
+    time_t start;
+    time(&start);
 
 
     //Don't proceed if file's aren't open, this avoids disaster
     if (file_prime_distribution.is_open() && file_primes.is_open()) {
         //Even numbers aren't prime number, except 2
+        #pragma omp parallel for
         for (unsigned int i = 1; i < prime_max+1; i+=1) {
-            //record the amount of divisors
-            unsigned int divisors = 2;
-            //check each number lower to see if it is a factor, except if you pass the halfway point
-            for (unsigned int j = 2; j < ((i/2) + 2); j++) {
-                if (i % j == 0) {
-                    divisors++;
-                    //If we already know it is a prime, just end the cycle
-                    if (divisors > 2) j=i;
-                }
-            }
+
             //See if number is a prime
-            if (divisors < 3) { //Because prime numbers divide into 1 and themselves
+            if (IsPrime(i)) { //Because prime numbers divide into 1 and themselves
                 prevPrime = prime;
                 prime = i;
                 cout << prime << "\n";
@@ -56,6 +56,7 @@ int main() {
                 file_prime_distribution << (prime - prevPrime) << "\n";
                 file_primes << prime << "\n";
             }
+
         }
     } else {
         cout << "Unable to open file.";
@@ -68,10 +69,9 @@ int main() {
     //record the current time
     time_t now;
     time(&now);
-    //calculate duration
-    double duration = difftime(now,start_milli);
+
     //inform user of duration
-    cout << "Duration: " << duration << "\n";
+    cout << "Duration: " << difftime(time(0), start) << "\n";
 
     //press any key to continue
     system("pause");
