@@ -38,6 +38,16 @@ int main() {
     cout << "Roof of prime number search range? (-1 to exit)\n";
     cin >> prime_max;
 
+    if (prime_max == -1)
+        return 0;
+
+    //The floor of the prime number search
+    int64_t prime_min  = 1;
+
+
+    cout << "Floor of prime number search range?\n";
+    cin >> prime_min;
+
     //Record current time to see the duration
     time_t start;
     time(&start);
@@ -47,7 +57,7 @@ int main() {
     if (file_prime_distribution.is_open() && file_primes.is_open()) {
         //Even numbers aren't prime number, except 2
         #pragma omp parallel for reduction (+:prime_count)
-        for (int64_t i = 1; i < prime_max+1; i+=1) {
+        for (int64_t i = prime_min; i < prime_max+1; i+=1) {
             if (i % 1000000 == 0) { // every 1,000,000 prime checks print out status
             cout << "Prime Checks: " << i  << "\nNumber: " << prime_count << "\nValue: " << prime << "\nTime: " << difftime(time(0), start)/60.00 <<  " min\n\n";
         }
@@ -58,8 +68,8 @@ int main() {
                 prime = i;
 
                 //record into file
-                file_prime_distribution << (prime - prevPrime) << ";" << difftime(time(0), start) << "\n";
-                file_primes << prime << "\n";
+                file_prime_distribution << endl <<(prime - prevPrime) << ";" << difftime(time(0), start);
+                file_primes << "\n" << prime;
             }
 
         }
